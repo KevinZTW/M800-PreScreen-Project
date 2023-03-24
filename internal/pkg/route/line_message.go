@@ -11,6 +11,11 @@ import (
 	"net/http"
 )
 
+type LineMessageSendingRequest struct {
+	Message  string `json:"message"`
+	TargetId string `json:"target_id"`
+}
+
 func SetUpLineMessage(r *gin.Engine) {
 	r.POST("/line_message/callback", func(c *gin.Context) {
 		lineMessageCallback(c)
@@ -19,6 +24,25 @@ func SetUpLineMessage(r *gin.Engine) {
 		})
 	})
 
+	r.POST("/line_message/send", func(c *gin.Context) {
+		req := &LineMessageSendingRequest{}
+		err := c.Bind(req)
+		if err != nil {
+			log.Default().Println(err)
+			c.String(http.StatusBadRequest, "Invalid request body")
+			return
+		}
+
+		message := linebot.NewTextMessage(req.Message)
+
+		bot := line.NewBot()
+		res, err := bot.PushMessage(req.TargetId, message)
+		if err != nil {
+			c.String(http.StatusBadRequest, "Send message error: %v", err)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
+	})
 }
 
 func lineMessageCallback(c *gin.Context) {
