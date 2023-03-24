@@ -33,6 +33,24 @@ func (l *LineMessageService) CreateMessage(messageId string, messageType model.M
 
 	return message, nil
 }
+func (l *LineMessageService) GetAllMessagesByUser(id string) ([]*model.LineMessage, error) {
+	res, err := l.repo.GetAllMessagesByUser(id)
+	if err != nil {
+		return nil, err
+	}
+
+	messages := []*model.LineMessage{}
+	for _, message := range res {
+		messages = append(messages, &model.LineMessage{
+			Id:          message.Id,
+			MessageType: model.MessageType(message.MessageType),
+			Text:        message.Text,
+			Source:      message.Source,
+		})
+	}
+
+	return messages, nil
+}
 
 func (l *LineMessageService) GetMessageByID(id string) (*model.LineMessage, error) {
 

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"context"
+	"fmt"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -54,4 +55,27 @@ func (l *LineMessageRepository) GetByID(id string) (*LineMessage, error) {
 		return nil, err
 	}
 	return message, nil
+}
+
+func (l *LineMessageRepository) GetAllMessagesByUser(id string) ([]*LineMessage, error) {
+	fmt.Println(id)
+	messages := []*LineMessage{}
+	cursor, err := l.collection.Find(context.TODO(), bson.M{"source.userid": id})
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(context.TODO()) {
+		fmt.Println("hihi")
+		message := &LineMessage{}
+		err := cursor.Decode(message)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(message)
+		messages = append(messages, message)
+	}
+
+	fmt.Println(messages)
+	return messages, nil
 }

@@ -43,6 +43,19 @@ func SetUpLineMessage(r *gin.Engine) {
 			c.JSON(http.StatusOK, res)
 		}
 	})
+
+	// api to get all messages by user id
+	r.GET("/line_message/:user_id", func(c *gin.Context) {
+		user_id := c.Param("user_id")
+		s := service.NewLineMessageService()
+		messages, err := s.GetAllMessagesByUser(user_id)
+		if err != nil {
+			c.String(http.StatusBadRequest, "Get messages error: %v", err)
+		} else {
+			c.JSON(http.StatusOK, messages)
+		}
+	})
+
 }
 
 func lineMessageCallback(c *gin.Context) {
