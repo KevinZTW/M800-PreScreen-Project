@@ -2,7 +2,9 @@
 
 MONGO_VERSION=4.4
 BIN_FILE=server
-MY_VOLUME := $(subst $(eval) ,\$(eval) ,$(CURDIR)/data/db)
+MY_VOLUME=~/data/m800/db
+
+ALL_PATH=./...
 
 DOCKER_CMD=docker
 GO_CMD=go
@@ -12,6 +14,7 @@ GO_TEST=$(GO_CMD) test
 GO_GET=$(GO_CMD) get
 GO_VET=$(GO_CMD) vet
 GO_RUN=$(GO_CMD) run
+
 
 
 all: test clean build run
